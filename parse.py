@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from utils import Stack
+
 
 class Tokenizer(object):
 
@@ -19,3 +21,22 @@ class Tokenizer(object):
         this = self.next_char
         self.__next()
         return this
+
+
+class Parser(object):
+
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+        self.tokens_stack = Stack()
+
+    def parse(self):
+        while 1:
+            char = self.tokenizer.get()
+            if char == "(":
+                continue
+            elif char in {'a', 'b'}:
+                self.tokens_stack.push(char)
+                continue
+            elif char in {'*', '?', '+'}:
+                self.tokens_stack.push(char)
+                continue
