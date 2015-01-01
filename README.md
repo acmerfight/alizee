@@ -1,3 +1,3 @@
 ## Alizee
 
-a regex regex engine use NFA
+A regex engine use NFA
