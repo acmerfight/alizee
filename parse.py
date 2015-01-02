@@ -28,6 +28,8 @@ class Parser(object):
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
         self.tokens_stack = Stack()
+        self.atom_number = 0
+        self.alt_number = 0
 
     def parse(self):
         while 1:
