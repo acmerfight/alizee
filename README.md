@@ -1,3 +1,3 @@
 ## Alizee
 
-A regex engine use NFA
+A regex engine use NFA, only support * + ? |
