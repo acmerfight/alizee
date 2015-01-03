@@ -43,7 +43,7 @@ class ReParser(object):
         self.mark_struct = MarkStruct()
         self.mark_list = []
 
-    def parse(self):
+    def re2post(self):
         while 1:
             char = self.tokenizer.get()
             if char is None:
@@ -60,7 +60,7 @@ class ReParser(object):
                 self.atom_number = 0
                 continue
             elif char == ")":
-                while self.atom_number - 1 > 0:
+                while self.atom_number > 1:
                     self.tokens_stack.push(".")
                     self.atom_number -= 1
                 while self.alt_number > 0:
@@ -72,8 +72,9 @@ class ReParser(object):
                 self.atom_number += 1
                 continue
             elif char == "|":
-                while self.atom_number - 1 > 0:
+                while self.atom_number > 1:
                     self.tokens_stack.push(".")
+                    self.atom_number -= 1
                 self.alt_number += 1
                 continue
             elif char in {"*", "+", "?"}:
@@ -86,8 +87,11 @@ class ReParser(object):
                 self.tokens_stack.push(char)
                 self.atom_number += 1
                 continue
+        while self.alt_number > 0:
+            self.tokens_stack.push("|")
+            self.alt_number -= 1
+        return self.tokens_stack
 
-tokenizer = Tokenizer("(ab)*c")
-parser = ReParser(tokenizer)
-parser.parse()
-print parser.tokens_stack
+tokenizer = Tokenizer("qx|(xab)")
+post_stack = ReParser(tokenizer).re2post()
+print post_stack
