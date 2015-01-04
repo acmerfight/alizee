@@ -37,7 +37,7 @@ class ReParser(object):
 
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
-        self.tokens_stack = Stack()
+        self.postfix_list = []
         self.alt_number = 0
         self.atom_number = 0
         self.mark_struct = MarkStruct()
@@ -51,7 +51,7 @@ class ReParser(object):
             elif char == "(":
                 if self.atom_number > 1:
                     self.atom_number -= 1
-                    self.tokens_stack.push(".")
+                    self.postfix_list.append(".")
                 self.mark_struct.alt_number = self.alt_number
                 self.mark_struct.atom_number = self.atom_number
                 self.mark_list.append(self.mark_struct)
@@ -61,10 +61,10 @@ class ReParser(object):
                 continue
             elif char == ")":
                 while self.atom_number > 1:
-                    self.tokens_stack.push(".")
+                    self.postfix_list.append(".")
                     self.atom_number -= 1
                 while self.alt_number > 0:
-                    self.tokens_stack.push("|")
+                    self.postfix_list.append("|")
                     self.alt_number -= 1
                 mark_struct = self.mark_list.pop()
                 self.alt_number = mark_struct.alt_number
@@ -73,25 +73,33 @@ class ReParser(object):
                 continue
             elif char == "|":
                 while self.atom_number > 1:
-                    self.tokens_stack.push(".")
+                    self.postfix_list.append(".")
                     self.atom_number -= 1
                 self.alt_number += 1
                 continue
             elif char in {"*", "+", "?"}:
-                self.tokens_stack.push(char)
+                self.postfix_list.append(char)
                 continue
             else:
                 if self.atom_number > 1:
                     self.atom_number -= 1
-                    self.tokens_stack.push('.')
-                self.tokens_stack.push(char)
+                    self.postfix_list.append('.')
+                self.postfix_list.append(char)
                 self.atom_number += 1
                 continue
         while self.alt_number > 0:
-            self.tokens_stack.push("|")
+            self.postfix_list.append("|")
             self.alt_number -= 1
-        return self.tokens_stack
+        return self.postfix_list
+
+
+def post2nfa(postfix_list):
+    stack = Stack()
+    for token in postfix_list:
+        if token == ".":
+            pass
+    pass
 
 tokenizer = Tokenizer("qx|(xab)")
-post_stack = ReParser(tokenizer).re2post()
-print post_stack
+postfix_list = ReParser(tokenizer).re2post()
+print postfix_list
